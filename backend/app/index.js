@@ -7,7 +7,7 @@ const validateMiddleware = require('./helpers');
  
 router.get('/contacts', (req, res) => {
     Contact.find({}, (err, data) => {
-        if(err) return res.json({ msg: "error occurred while retriving contacts" || err.message });
+        if(err) return res.json(err.message);
         res.send(data);
     });
 });
@@ -22,7 +22,7 @@ router.post('/contacts', validateMiddleware, (req, res) => {
         if(!contactExists) {
             const newContact = new Contact(req.body.contact);
             newContact.save((err, data) => {
-                if(err) return res.json({ msg: "Some error occurred with a contact" || err.message });
+                if(err) return res.json(err.message);
                 return  res.status(201).send(data);
             });
         } else {
@@ -36,7 +36,7 @@ router.delete('/contacts/:id', (req, res) => {
     const { id } = req.params;
     Contact.findById(id, (err, contact) => {
         if(err) { 
-            return res.status(404).json({ msg: "contact not found with id=" + id });
+            return res.status(404).json(err.message);
         }
         contact.remove(() => {
             res.json({msg: "deleted successfully"});
@@ -48,7 +48,7 @@ router.delete('/contacts/:id', (req, res) => {
 router.get('/contacts/:id', (req, res) => {
     const { id } = req.params;
     Contact.findById(id, (err, contact) => {
-           if(err) return res.json({ msg: "cannot find contact with id=" + id || err.message });
+           if(err) return res.json(err.message);
            res.send(contact);
     });
 });
@@ -58,12 +58,12 @@ router.put('/contacts/:id', validateMiddleware, (req, res) => {
     const { id } = req.params;
     const { phone, name } = req.body.contact;
     Contact.findById(id, (err, contact) => {
-        if(err) return res.json({ msg: "cannot find contact with id=" + id || err.message });
+        if(err) return res.json(err.message);
         contact._id = id,
         contact.name = name,
         contact.phone = phone,
         contact.save((err, data) => {
-          if(err) return res.json({ msg: "Error update contact fields" || err.message });
+          if(err) return res.json(err.message);
           res.send(data);
         });
     });
